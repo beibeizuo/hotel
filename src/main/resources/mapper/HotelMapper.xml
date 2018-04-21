@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace命名空间，作用就是对sql进行分类化管理，理解sql隔离 
+注意：使用mapper代理方法开发，namespace有特殊重要的作用，namespace等于mapper接口地址
+-->
+<mapper namespace="weixin.hotel.mapper.HotelMapper">
+	<resultMap id="base_info" type="weixin.hotel.entity.Hotel">
+		<result column="HOTELNAME" property="hotelName" jdbcType="VARCHAR"></result>
+		<result column="HOTELLOCATION" property="hotelLocation" jdbcType="VARCHAR"></result>
+		<result column="LONGITUDE" property="longitude" jdbcType="VARCHAR"></result>
+		<result column="LATITUDE" property="latitude" jdbcType="VARCHAR"></result>
+
+	</resultMap>
+
+	<!-- 查询酒店信息 by Rubic -->
+	<select id="selectHotelInfoByHid" parameterType="java.lang.String" resultType="weixin.hotel.entity.Hotel">
+		select * from sys_hotel where HID = #{hid, jdbcType=CHAR}
+	</select>
+	<!-- 查询酒店信息 模糊查询by zuobei -->
+	<select id="selectHotelInfoByKeyWord" parameterType="java.lang.String" resultType="weixin.hotel.entity.Hotel">
+		select * from sys_hotel where HOTELNAME LIKE #{0}
+	</select>
+
+	<select id="selectLocationByHid" parameterType="java.lang.String" resultType="java.lang.String">
+		select HOTELLOCATION from sys_hotel where HID = #{hid, jdbcType=CHAR}
+	</select>
+
+	<select id="selectHotelsByCity" parameterType="java.lang.String" resultType="java.lang.String">
+		select HOTELNAME from sys_hotel where CITY = #{city}
+	</select>
+
+	<select id="selectHotelInfosByCity" parameterType="java.lang.String" resultMap="base_info">
+		select HOTELNAME, HOTELLOCATION, LONGITUDE, LATITUDE, HOTELPICURL from sys_hotel where CITY = #{city}
+	</select>
+
+	<select id="selectHotelByCityAndName" parameterType="java.lang.String" resultType="weixin.hotel.entity.Hotel">
+		select * from sys_hotel where CITY=#{city} AND HOTELNAME=#{hotelName}
+	</select>
+
+	<select id="selectCity" resultType="java.lang.String">
+		select CITY from sys_hotel
+	</select>
+</mapper>

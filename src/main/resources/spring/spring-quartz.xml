@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- 要调用的工作类 -->
+    <bean id="quartzJob" class="weixin.hotel.utils.QuartzJob"></bean>
+    <bean id="SpringContextUtil" class="weixin.hotel.utils.BeanUtil"></bean>
+
+
+    <!-- 定义调用对象和调用对象的方法 -->
+    <bean id="jobtaskForToken"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <!-- 调用的类 -->
+        <property name="targetObject">
+            <ref bean="quartzJob" />
+        </property>
+        <!-- 调用类中的方法 -->
+        <property name="targetMethod">
+            <value>workForToken</value>
+        </property>
+    </bean>
+    <!-- 定义触发时间 -->
+    <bean id="doTimeForToken" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail">
+            <ref bean="jobtaskForToken" />
+        </property>
+        <!-- cron 表达式 -->
+        <property name="cronExpression">
+            <value>0 0 */2 * * ?</value>
+        </property>
+    </bean>
+
+    <bean id="jobtaskForOrder"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <!-- 调用的类 -->
+        <property name="targetObject">
+            <ref bean="quartzJob" />
+        </property>
+        <!-- 调用类中的方法 -->
+        <property name="targetMethod">
+            <value>workForOrderState</value>
+        </property>
+    </bean>
+    <!-- 定义触发时间 -->
+    <bean id="doTimeForOrder" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail">
+            <ref bean="jobtaskForOrder" />
+        </property>
+        <!-- cron 表达式 -->
+        <property name="cronExpression">
+            <value>0 0/15 * * * ?</value>
+        </property>
+    </bean>
+
+
+    <!-- 配置: 项目一启动后，任务就立即执行一次 -->
+    <bean id="rsh_simpleTrigger1" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+        <property name="jobDetail" ref="jobtaskForToken" />
+        <property name="startDelay" value="5000" />
+        <property name="repeatInterval" value="0" />
+        <property name="repeatCount" value="0" />
+    </bean>
+
+    <!-- 总管理类 如果将 lazy-init='false'那么容器启动就会执行调度程序 -->
+    <bean id="startQuertz" lazy-init="false" autowire="no"
+          class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="doTimeForToken" />
+                <ref bean="rsh_simpleTrigger1" />
+                <ref bean="doTimeForOrder" />
+            </list>
+        </property>
+    </bean>
+
+
+
+</beans>

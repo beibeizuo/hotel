@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace命名空间，作用就是对sql进行分类化管理，理解sql隔离 注意：使用mapper代理方法开发，namespace有特殊重要的作用，namespace等于mapper接口地址 -->
+<mapper namespace="weixin.hotel.mapper.OrderMapper">
+
+	<select id="selectOrderRoomNum" parameterType="map" resultType="java.lang.Integer">
+		select
+		ORDERROOMNUM from sys_order
+		where HID=#{hid, jdbcType=VARCHAR} and
+		ROOMNAME=#{roomName, jdbcType=VARCHAR} and CHECKINDATE &lt;= #{check,
+		jdbcType=DATE}  and CHECKOUTDATE &gt; #{check, jdbcType=DATE} and STATE != "0" and STATE != "-2"
+	</select>
+	
+	<!-- 根据OPENID和STATUS查询订单历史记录 by zuobei-->
+	<select id="selectUserHistoryOrderByStatus" parameterType="java.lang.String" resultType="weixin.hotel.entity.SysOrder">
+		select * from sys_order where OPENID=#{openID, jdbcType=VARCHAR} AND STATE=#{status, jdbcType=VARCHAR} ORDER BY ORDERDATE DESC
+	</select>
+
+	<!-- 根据OPENID查询订单历史记录 by zuobei-->
+	<select id="selectUserHistoryOrderByOpenID" parameterType="java.lang.String" resultType="weixin.hotel.entity.SysOrder">
+		select * from sys_order where OPENID=#{openID, jdbcType=VARCHAR} ORDER BY ORDERDATE DESC
+	</select>
+	<!-- 根据ID查询订单详情记录 by zuobei-->
+	<select id="selectOrderById" parameterType="java.lang.String" resultType="weixin.hotel.entity.SysOrder">
+		select * from sys_order where SYSCODE=#{syscode, jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 订单表中插入新的数据 by zuobei-->
+	<insert id="insertOrder" parameterType="weixin.hotel.entity.SysOrder">
+		insert into sys_order
+		(SYSCODE, HID, STATE,ORDERROOMNUM,CHECKINDATE,CHECKOUTDATE,ORDERDATE,
+		ORDERUSERNAME,ORDERPHONE,ORDERPAY,ROOMPRICE,ROOMNAME,HOTELNAME,PID,LODGER,LIVEINNUM,OPENID,TOTALPRICE)
+		values
+		(#{sysCode, jdbcType=VARCHAR},
+		#{hid,jdbcType=VARCHAR},
+		#{state,jdbcType=VARCHAR},
+		#{orderRoomNum,jdbcType=VARCHAR},
+		#{checkInDate,jdbcType=TIMESTAMP},
+		#{checkOutDate,jdbcType=TIMESTAMP},
+		#{orderDate,jdbcType=TIMESTAMP},
+		#{orderUserName,jdbcType=VARCHAR},
+		#{orderPhone,jdbcType=VARCHAR},
+		#{orderPay,jdbcType=VARCHAR},
+		#{roomPrice,jdbcType=VARCHAR},
+		#{roomName,jdbcType=VARCHAR},
+		#{hotelName,jdbcType=VARCHAR},
+		#{pid,jdbcType=VARCHAR},
+		#{lodger,jdbcType=VARCHAR},
+		#{liveInNum,jdbcType=VARCHAR},
+		#{openID,jdbcType=VARCHAR},
+		#{totalPrice,jdbcType=VARCHAR})
+	</insert>
+	<!-- 更新订单状态 by左贝 -->
+	 <update id="updateOrderState" parameterType="java.lang.String">
+		update sys_order set STATE = #{state ,jdbcType=VARCHAR} where SYSCODE = #{sysCode,jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateOrderStatus">
+		update sys_order
+		set STATE = "0"
+		where STATE = "100"
+	</update>
+</mapper>

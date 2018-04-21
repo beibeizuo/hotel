@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace命名空间，作用就是对sql进行分类化管理，理解sql隔离 
+注意：使用mapper代理方法开发，namespace有特殊重要的作用，namespace等于mapper接口地址
+-->
+<mapper namespace="weixin.hotel.mapper.RoomMapper">
+
+	<!-- 查询酒店信息 by Rubic -->
+	<select id="selectRoomsByHid" parameterType="java.lang.String" resultType="weixin.hotel.entity.Room">
+		select * from sys_room_type where HID = #{hid, jdbcType=CHAR} and STATUS = 1
+	</select>
+	
+	<select id="selectRoomByHidAndRoomName" parameterType="java.lang.String" resultType="weixin.hotel.entity.Room">
+		select * from sys_room_type where HID = #{0} and ROOMNAME = #{1} and STATUS = 1
+	</select>
+
+	<select id="selectRoomsByRoomTypeId" parameterType="java.lang.String" resultType="weixin.hotel.entity.Room">
+		select * from sys_room_type where SYSCODE = #{roomTypeId, jdbcType=VARCHAR} and STATUS = 1
+	</select>
+
+	<select id="selectRoomPrices" parameterType="java.lang.String" resultType="java.lang.Double">
+		select CPRICE
+		from sys_room_price
+		where ROOMTYPEID = #{roomTypeId, jdbcType=VARCHAR} AND
+			  CDATE &gt;= #{startDate, jdbcType=TIMESTAMP} AND CDATE &lt; #{endDate, jdbcType=TIMESTAMP}
+
+	</select>
+
+	<select id="selectBaseRoomPrices" parameterType="java.lang.String" resultType="java.lang.Double">
+		select CPRICE
+		from sys_base_price
+		where ROOMTYPEID = #{roomTypeId, jdbcType=VARCHAR} AND
+		CDATE &gt;= #{startDate, jdbcType=TIMESTAMP} AND CDATE &lt; #{endDate, jdbcType=TIMESTAMP}
+
+	</select>
+
+	<select id="selectRoomTypeIdsByHid" parameterType="java.lang.String" resultType="java.lang.String">
+		select SYSCODE from sys_room_type where HID=#{hid, jdbcType=VARCHAR} and STATUS = 1
+	</select>
+</mapper>
